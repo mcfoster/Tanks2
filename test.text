@@ -1,0 +1,12 @@
+[ItemList.cpp:4]: (warning) Member variable 'ItemList::length' is not initialized in the constructor.
+[main.cpp:224] -> [main.cpp:227]: (style) Variable 'imageLoaded' is reassigned a value before the old one has been used.
+[main.cpp:975]: (style) The scope of the variable 'done' can be reduced.
+[main.cpp:499]: (style) Variable 'boxH' is assigned a value that is never used.
+[main.cpp:638]: (style) Variable 'boxH' is assigned a value that is never used.
+[main.cpp:1315]: (style) Variable 'retVal' is assigned a value that is never used.
+[gameMessageBox.cpp:20]: (style) The function 'setBackColor' is never used.
+[DrawText.cpp:22]: (style) The function 'setFColor' is never used.
+[DrawText.cpp:31]: (style) The function 'setFont' is never used.
+[DrawText.cpp:26]: (style) The function 'setFontFile' is never used.
+[DrawText.cpp:17]: (style) The function 'setFontSize' is never used.
+(information) Cppcheck cannot find all the include files (use --check-config for details)

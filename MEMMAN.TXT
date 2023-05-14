@@ -1,0 +1,128 @@
+
+--- Module:   drawtext.cpp 
+                               _
+    void setFont(TTF_Font *font);
+drawtext.h  19  Warning 530: TTF_Font (location unknown) not initialized
+drawtext.h  19  Warning 530: font (location unknown) not initialized
+                             _
+    DrawText::fColor = fColor;
+drawtext.cpp  23  Warning 530: fColor (location unknown) not initialized
+                                           _
+    font = TTF_OpenFont(FontFile, fontSize);
+drawtext.cpp  28  Warning 530: TTF_OpenFont (location unknown) not initialized
+                                           _
+    font = TTF_OpenFont(FontFile, fontSize);
+drawtext.cpp  36  Warning 530: FontFile (location unknown) not initialized
+
+--- Module:   gameme~2.cpp 
+                _
+    int x1 = x+5;
+gameme~2.cpp  42  Warning 530: x (location unknown) not initialized
+                _
+    int y1 = y+5;
+gameme~2.cpp  43  Warning 530: y (location unknown) not initialized
+                         _
+    for (int i = 0; msg[i] != nullptr; ++i) {
+gameme~2.cpp  44  Warning 530: i (location unknown) not initialized
+
+--- Module:   itemlist.cpp 
+
+--- Module:   main.cpp 
+                               _
+    void setFont(TTF_Font *font);
+drawtext.h  19  Warning 530: TTF_Font (location unknown) not initialized
+drawtext.h  19  Warning 530: font (location unknown) not initialized
+                              _
+        int addItem(TItemRec *data);
+itemlist.h  18  Warning 530: TItemRec (location unknown) not initialized
+                            _
+void DrawImage(SDL_Surface* image, SDL_Surface* destSurface, int x, int y);
+main.cpp  104  Warning 530: SDL_Surface (location unknown) not initialized
+                                             _
+    SDL_WM_SetCaption("Tank Commander", NULL);
+main.cpp  126  Warning 530: NULL (location unknown) not initialized
+                                                                                                          _
+                    msgBox->ShowMessageBox(Backbuffer, sWin, width / 4, height / 4, width / 2, height / 3);
+main.cpp  155  Warning 530: Backbuffer (location unknown) not initialized
+                               _
+    SDL_FreeSurface(Background);
+main.cpp  250  Warning 530: Background (location unknown) not initialized
+                                _
+    SDL_FreeSurface(SpriteImage);
+main.cpp  251  Warning 530: SpriteImage (location unknown) not initialized
+                               _
+    explosionList->deleteList();
+main.cpp  252  Warning 530: explosionList (location unknown) not initialized
+                            _
+    bulletList->deleteList();
+main.cpp  254  Warning 530: bulletList (location unknown) not initialized
+                           _
+    tanksList->deleteList();
+main.cpp  256  Warning 530: tanksList (location unknown) not initialized
+                            _
+    blocksList->deleteList();
+main.cpp  258  Warning 530: blocksList (location unknown) not initialized
+                          _
+    treeList->deleteList();
+main.cpp  260  Warning 530: treeList (location unknown) not initialized
+                         _
+    int w = BlockImage->w;
+main.cpp  373  Warning 530: BlockImage (location unknown) not initialized
+main.cpp  373  Warning 530: w (line 373) not initialized
+                         _
+    int h = BlockImage->h;
+main.cpp  374  Warning 530: h (line 374) not initialized
+                            _
+    TnkPtr->color = BlueTank; // Good guy
+main.cpp  443  Warning 530: BlueTank (location unknown) not initialized
+                         _
+    int w = BlockImage->w;
+main.cpp  506  Warning 530: w (line 506) not initialized
+                         _
+    int h = BlockImage->h;
+main.cpp  507  Warning 530: h (line 507) not initialized
+                         _
+    int w = BlockImage->w;
+main.cpp  645  Warning 530: w (line 645) not initialized
+                         _
+    int h = BlockImage->h;
+main.cpp  646  Warning 530: h (line 646) not initialized
+                         _
+    int w = BlockImage->w;
+main.cpp  783  Warning 530: w (line 783) not initialized
+                         _
+    int h = BlockImage->h;
+main.cpp  784  Warning 530: h (line 784) not initialized
+                                                               _
+        brPtr->x = TnkPtr->x + ShotStartX[TnkPtr->directionIdx];
+main.cpp  940  Warning 530: x (location unknown) not initialized
+                                                               _
+        brPtr->y = TnkPtr->y + ShotStartY[TnkPtr->directionIdx];
+main.cpp  941  Warning 530: y (location unknown) not initialized
+                     _
+    int x = TnkPtr->x;
+main.cpp  1104  Warning 530: x (line 1104) not initialized
+                     _
+    int y = TnkPtr->y;
+main.cpp  1105  Warning 530: y (line 1105) not initialized
+                        _
+    if(TnkPtr->scrn == 0)
+main.cpp  1185  Warning 530: scrn (location unknown) not initialized
+                                                              _
+                   tankWidth, tankHeight, ptRec->directionIdx);
+main.cpp  1568  Warning 530: blueTanks (location unknown) not initialized
+                                                               _
+                    tankWidth, tankHeight, ptRec->directionIdx);
+main.cpp  1573  Warning 530: redTanks (location unknown) not initialized
+                                                               _
+                    tankWidth, tankHeight, ptRec->directionIdx);
+main.cpp  1578  Warning 530: deadTanks (location unknown) not initialized
+                                 _
+            SDL_Rect* rect = new SDL_Rect;
+main.cpp  1589  Warning 530: SDL_Rect (location unknown) not initialized
+                                                                         _
+                    explosionWidth, explosionHeight, ptRec->directionIdx);
+main.cpp  1605  Warning 530: explosions (location unknown) not initialized
+                                                                _
+            DrawImage(TreeImage, Backbuffer, ptRec->x, ptRec->y);
+main.cpp  1615  Warning 530: TreeImage (location unknown) not initialized

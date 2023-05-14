@@ -1,0 +1,166 @@
+
+--- Module:   drawtext.cpp 
+
+--- Module:   gameme~2.cpp 
+
+--- Module:   itemlist.cpp 
+              _
+        length--;
+itemlist.cpp  57  Warning 525: Negative indentation from line 56
+
+--- Module:   main.cpp 
+_
+}
+main.cpp  191  Info 715: argc (line 109) not referenced
+main.cpp  191  Info 715: args (line 109) not referenced
+_
+} // void InitScrn2()
+main.cpp  621  Info 752: local declarator 'boxH' (line 499) not referenced
+_
+} // InitScrn3()
+main.cpp  759  Info 752: local declarator 'boxH' (line 638) not referenced
+_
+}
+main.cpp  1093  Warning 529: s (line 974) not subsequently referenced
+_
+}
+main.cpp  1319  Warning 529: retVal (line 1315) not subsequently referenced
+
+--- Global Wrap-up
+
+Info 757: global declarator ~ItemList(void) (line 16, file itemlist.h) not
+    referenced
+Info 765: external AimingAtTarget(int) (line 1407, file main.cpp) could be made
+    static
+Info 765: external LoadImage(char *) (line 222, file main.cpp) could be made
+    static
+Info 765: external WallCollision(int, int, int *) (line 1362, file main.cpp)
+    could be made static
+Info 765: external sUserName (line 66, file main.cpp) could be made static
+Info 765: external ShowScore(void) (line 1622, file main.cpp) could be made
+    static
+Info 757: global declarator setFColor(const int) (line 28, file drawtext.h) not
+    referenced
+Info 765: external addItem (line 18, file itemlist.h, module main.cpp) could be
+    made static
+Info 765: external FreeResources(void) (line 248, file main.cpp) could be made
+    static
+Info 765: external setFont (line 19, file drawtext.h, module main.cpp) could be
+    made static
+Info 714: setFont (line 19, file drawtext.h, module main.cpp) not referenced
+Info 757: global declarator setFontSize(int) (line 27, file drawtext.h) not
+    referenced
+Info 757: global declarator setFontFile(char *) (line 29, file drawtext.h) not
+    referenced
+Info 765: external ~gameMessageBox(void) (line 12, file gameme~2.cpp) could be
+    made static
+Info 714: ~gameMessageBox(void) (line 12, file gameme~2.cpp) not referenced
+Info 765: external CheckGameOver(void) (line 1253, file main.cpp) could be made
+    static
+Info 765: external CheckKeyPress(void) (line 914, file main.cpp) could be made
+    static
+Info 765: external columns (line 1531, file main.cpp) could be made static
+Info 714: columns (line 1531, file main.cpp) not referenced
+Info 765: external InitGame(void) (line 267, file main.cpp) could be made
+    static
+Info 765: external InitImages(void) (line 321, file main.cpp) could be made
+    static
+Info 765: external InitLists(void) (line 336, file main.cpp) could be made
+    static
+Info 765: external InitShotOffset(void) (line 290, file main.cpp) could be made
+    static
+Info 765: external InitScrn1(void) (line 362, file main.cpp) could be made
+    static
+Info 765: external InitScrn2(void) (line 495, file main.cpp) could be made
+    static
+Info 765: external InitScrn3(void) (line 634, file main.cpp) could be made
+    static
+Info 765: external InitScrn4(void) (line 772, file main.cpp) could be made
+    static
+Info 765: external directionIdx (line 11, file itemlist.h, module main.cpp)
+    could be made static
+Info 765: external dist (line 12, file itemlist.h, module main.cpp) could be
+    made static
+Info 757: global declarator ~DrawText(void) (line 25, file drawtext.h) not
+    referenced
+Info 765: external ClearScreen(void) (line 214, file main.cpp) could be made
+    static
+Info 765: external Count(void) (line 17, file itemlist.h, module main.cpp)
+    could be made static
+Info 765: external done (line 75, file main.cpp) could be made static
+Info 765: external FontFile (line 17, file drawtext.h, module main.cpp) could
+    be made static
+Info 765: external MoveBtmRight(int, int, int) (line 1164, file main.cpp) could
+    be made static
+Info 765: external MoveTank(int, int) (line 1101, file main.cpp) could be made
+    static
+Info 765: external MoveTopLeft(int, int) (line 1152, file main.cpp) could be
+    made static
+Info 765: external score (line 74, file main.cpp) could be made static
+Info 765: external width (line 40, file main.cpp) could be made static
+Info 765: external ProgramIsRunning(void) (line 196, file main.cpp) could be
+    made static
+Info 765: external PaintGame(void) (line 1545, file main.cpp) could be made
+    static
+Info 765: external blueCount (line 57, file main.cpp) could be made static
+Info 765: external chkBump(int, int) (line 1313, file main.cpp) could be made
+    static
+Info 765: external ChkCollisions(void) (line 1271, file main.cpp) could be made
+    static
+Info 765: external printText (line 30, file drawtext.h, module main.cpp) could
+    be made static
+Info 714: printText (line 30, file drawtext.h, module main.cpp) not referenced
+Info 765: external x1 (line 42, file gameme~2.cpp) could be made static
+Info 714: x1 (line 42, file gameme~2.cpp) not referenced
+Info 765: external UpdateGame(void) (line 971, file main.cpp) could be made
+    static
+Info 765: external Collision(int, int, int, int, int, int) (line 1397, file
+    main.cpp) could be made static
+Info 765: external gameMessageBox(void) (line 7, file gameme~2.cpp) could be
+    made static
+Info 714: gameMessageBox(void) (line 7, file gameme~2.cpp) not referenced
+Info 765: external y1 (line 43, file gameme~2.cpp) could be made static
+Info 714: y1 (line 43, file gameme~2.cpp) not referenced
+Info 765: external rightCnt (line 59, file main.cpp) could be made static
+Info 765: external gameState (line 71, file main.cpp) could be made static
+Info 765: external leftCnt (line 58, file main.cpp) could be made static
+Info 765: external GetKeyboardChar(void) (line 957, file main.cpp) could be
+    made static
+Info 765: external NewScreenCheck(int) (line 1181, file main.cpp) could be made
+    static
+Info 765: external color (line 11, file itemlist.h, module main.cpp) could be
+    made static
+Info 765: external height (line 39, file main.cpp) could be made static
+Info 765: external curScrn (line 65, file main.cpp) could be made static
+Info 765: external MaxX (line 54, file main.cpp) could be made static
+Info 765: external DrawImage (line 1513, file main.cpp) could be made static
+Info 765: external DrawImageFrame (line 105, file main.cpp) could be made
+    static
+Info 765: external ShotStartX (line 46, file main.cpp) could be made static
+Info 765: external ShotStartY (line 47, file main.cpp) could be made static
+Info 765: external redCount (line 57, file main.cpp) could be made static
+Info 765: external TankCollision(int, int, int *) (line 1325, file main.cpp)
+    could be made static
+Info 765: external badGuyRoutine(int) (line 1462, file main.cpp) could be made
+    static
+Info 765: external drawText (line 73, file main.cpp) could be made static
+Info 765: external setBackColor(const int) (line 20, file gameme~2.cpp) could
+    be made static
+Info 714: setBackColor(const int) (line 20, file gameme~2.cpp) not referenced
+Info 757: global declarator ItemList(void) (line 15, file itemlist.h) not
+    referenced
+Info 765: external MaxY (line 54, file main.cpp) could be made static
+Info 768: global struct member DrawText::SDL_Color (line 16, file drawtext.h)
+    not referenced
+Info 768: global struct member TItemRec::x (line 10, file itemlist.h) not
+    referenced
+Info 768: global struct member TItemRec::y (line 10, file itemlist.h) not
+    referenced
+Info 768: global struct member TItemRec::scrn (line 10, file itemlist.h) not
+    referenced
+Info 768: global struct member TItemRec::directionIdx (line 11, file
+    itemlist.h) not referenced
+Info 768: global struct member TItemRec::color (line 11, file itemlist.h) not
+    referenced
+Info 768: global struct member TItemRec::dist (line 12, file itemlist.h) not
+    referenced
