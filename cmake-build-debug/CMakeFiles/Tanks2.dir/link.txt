@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/Tanks2.dir/ItemList.cpp.o CMakeFiles/Tanks2.dir/main.cpp.o CMakeFiles/Tanks2.dir/DrawText.cpp.o CMakeFiles/Tanks2.dir/gameMessageBox.cpp.o -o Tanks2  /usr/lib/x86_64-linux-gnu/libSDL.so /usr/lib/x86_64-linux-gnu/libSDL_ttf.so /usr/lib/x86_64-linux-gnu/libSDL_mixer.so 

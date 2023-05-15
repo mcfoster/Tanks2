@@ -1,0 +1,3 @@
+/home/chris/Projects/C-Projects/Tanks2/cmake-build-debug/CMakeFiles/Tanks2.dir
+/home/chris/Projects/C-Projects/Tanks2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/chris/Projects/C-Projects/Tanks2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
