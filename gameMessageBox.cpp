@@ -45,5 +45,4 @@ void gameMessageBox::ShowMessageBox(SDL_Surface *sImage, char *msg[], int x, int
         printText(sImage, msg[i], x1, y1);
         y1 += fontRect.h + 2;
     }
-
 }
