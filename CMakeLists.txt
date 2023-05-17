@@ -24,3 +24,7 @@ target_link_libraries(Tanks2
         "/usr/lib/x86_64-linux-gnu/libSDL_ttf.so"
         "/usr/lib/x86_64-linux-gnu/libSDL_mixer.so")
 
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/images
+        ${CMAKE_BINARY_DIR}/images)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/fonts
+        ${CMAKE_BINARY_DIR}/fonts)
