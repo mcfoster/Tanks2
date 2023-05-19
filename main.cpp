@@ -22,9 +22,12 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#include <vector>
+#include <memory>
 #include "DrawText.h"
 #include "gameMessageBox.h"
-#include "ItemList.h"
+//#include "ItemList.h"
+#include "Item.h"
 
 const int BlueTank = 1;
 const int RedTank = 2;
@@ -57,11 +60,11 @@ SDL_Surface *TreeImage;
 int blueCount, redCount;
 int leftCnt=0;
 int rightCnt=0;
-ItemList *bulletList;
-ItemList *tanksList;
-ItemList *explosionList;
-ItemList *blocksList;
-ItemList *treeList;
+std::vector<std::shared_ptr<TItemRec>> bulletList;
+std::vector<std::shared_ptr<TItemRec>> tanksList;
+std::vector<std::shared_ptr<TItemRec>> explosionList;
+std::vector<std::shared_ptr<TItemRec>> blocksList;
+std::vector<std::shared_ptr<TItemRec>> treeList;
 int curScrn;
 char sUserName[40]; // Plenty for user
 SDL_Surface* Background = NULL;
@@ -245,16 +248,11 @@ void FreeResources()
 {
     SDL_FreeSurface(Background);
     SDL_FreeSurface(SpriteImage);
-    explosionList->deleteList();
-    delete explosionList;
-    bulletList->deleteList();
-    delete bulletList;
-    tanksList->deleteList();
-    delete tanksList;
-    blocksList->deleteList();
-    delete blocksList;
-    treeList->deleteList();
-    delete treeList;
+    explosionList.clear();
+    bulletList.clear();
+    tanksList.clear();
+    blocksList.clear();
+    treeList.clear();
 } // FreeResources
 
 /****************************************************************************
@@ -262,11 +260,6 @@ void FreeResources()
 ****************************************************************************/
 void InitGame()
 {
-    bulletList = new ItemList();
-    tanksList  = new ItemList();
-    explosionList  = new ItemList();
-    blocksList   = new ItemList();
-    treeList  = new ItemList();
     InitImages();
     InitLists();
     InitShotOffset();
@@ -331,11 +324,11 @@ void InitImages()
 ******************************************************************************/
 void InitLists()
 {
-    explosionList->deleteList();
-    bulletList->deleteList();
-    tanksList->deleteList();
-    blocksList->deleteList();
-    treeList->deleteList();
+    explosionList.clear();
+    bulletList.clear();
+    tanksList.clear();
+    blocksList.clear();
+    treeList.clear();
     blueCount = 1;
     redCount  = 8;
     score = 1000.0;
@@ -348,7 +341,7 @@ void InitLists()
 /******************************************************************************
 * Procedure: InitScrn1;
 * Parameters: None
-* This function initializes screen #1, the top left game screen.
+* This function initializes screen [0], the top left game screen.
 *     ||
 * [0] ||  1
 * ==========
@@ -363,8 +356,8 @@ void InitScrn1()
     const int boxW = 20; // blocks wide
     const int scrNo = 0;
 
-    ItemList::TItemRec *TnkPtr;
-    ItemList::TItemRec *ptRec;
+    std::shared_ptr<TItemRec> TnkPtr;
+    std::shared_ptr<TItemRec> ptRec;
 
     int w = BlockImage->w;
     int h = BlockImage->h;
@@ -375,42 +368,38 @@ void InitScrn1()
 
     int i = w;
 
-    if(blocksList == NULL)
-        blocksList = new ItemList;
-    else
-        blocksList->deleteList();
-
+    blocksList.clear();
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = i;
         ptRec->y = 0;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_x1) ||(i >= gate_x2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = i;
             ptRec->y = height - h;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + w;
     } while( i < (width - w));
 
     i = 0;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = 0;
         ptRec->y = i;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_y1) || (i >= gate_y2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = width - w;
             ptRec->y = i;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + h;
     } while( i < (height - h));
@@ -420,68 +409,68 @@ void InitScrn1()
     for(i = 0; i < boxW; i++)
     {
         //top
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         // bottom
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = boxTop + (boxH * h);
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         x = x + w;
     } // next i
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 4;
     TnkPtr->color = BlueTank; // Good guy
     TnkPtr->x = 20;
     TnkPtr->y = 20;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 4;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = 150;
     TnkPtr->y = 30;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 2;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = 160;
     TnkPtr->y = 200;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 40;
     ptRec->y = height / 2;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 60;
     ptRec->y = (height / 2) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 50;
     ptRec->y = (height / 2) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
     //*********************************************
 } // InitScrn1
 
 /******************************************************************************
 * Procedure: InitScrn2;
 * Parameters: None
-* This function initializes screen #2, the top right game screen.
+* This function initializes screen [1], the top right game screen.
 *     ||
 *  0  || [1]
 * ==========
@@ -496,8 +485,8 @@ void InitScrn2()
     const int boxW = 20; // blocks wide
     const int scrNo = 1;
 
-    ItemList::TItemRec *TnkPtr;
-    ItemList::TItemRec *ptRec;
+    std::shared_ptr<TItemRec> TnkPtr;
+    std::shared_ptr<TItemRec> ptRec;
 
     int w = BlockImage->w;
     int h = BlockImage->h;
@@ -508,36 +497,36 @@ void InitScrn2()
 
     int i = w;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = i;
         ptRec->y = 0;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_x1) ||(i >= gate_x2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = i;
             ptRec->y = height - h;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + w;
     } while( i < (width - w));
 
     i = 0;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = width - w;
         ptRec->y = i;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_y1) || (i >= gate_y2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = 0;
             ptRec->y = i;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + h;
     } while( i < (height - h));
@@ -547,79 +536,78 @@ void InitScrn2()
     for(i = 0; i < boxW; i++)
     {
         //top
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         // bottom
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x + (boxW * w);
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         y = y + h;
     } // next i
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 4;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = width - 40;
     TnkPtr->y = 30;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 2;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = 160;
     TnkPtr->y = 200;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 40;
     ptRec->y = height / 2;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 60;
     ptRec->y = (height / 2) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 50;
     ptRec->y = (height / 2) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 4) - 20;
     ptRec->y = (height / 4) + 20;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 3) - 60;
     ptRec->y = (height / 4) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 3) - 50;
     ptRec->y = (height / 4) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
     //***********************************************}
 } // void InitScrn2()
 
 /******************************************************************************
 * Procedure: InitScrn3;
 * Parameters: None
-* This function initializes screen #2, the top right game screen.
+* This function initializes screen[2], the bottom left game screen.
 *
 *     ||
 *  0  ||  1
@@ -635,8 +623,8 @@ void InitScrn3()
     const int boxW = 22; // blocks wide
     const int scrNo = 2;
 
-    ItemList::TItemRec *TnkPtr;
-    ItemList::TItemRec *ptRec;
+    std::shared_ptr<TItemRec> TnkPtr;
+    std::shared_ptr<TItemRec> ptRec;
 
     int w = BlockImage->w;
     int h = BlockImage->h;
@@ -647,36 +635,36 @@ void InitScrn3()
 
     int i = w;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = i;
         ptRec->y = height - h;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_x1) ||(i >= gate_x2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = i;
             ptRec->y = 0;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + w;
     } while( i < (width - w));
 
     i = 0;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = 0;
         ptRec->y = i;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_y1) || (i >= gate_y2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = width - w;
             ptRec->y = i;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + h;
     } while( i < (height - h));
@@ -686,78 +674,78 @@ void InitScrn3()
     for(i = 0; i < boxW; i++)
     {
         //top
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         // bottom
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x + (boxW * w);
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         y = y + h;
     } // next i
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 4;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = width - 40;
     TnkPtr->y = 30;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 2;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = 160;
     TnkPtr->y = height - 60;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 45;
     ptRec->y = (height / 2) - 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 60;
     ptRec->y = (height / 2) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 50;
     ptRec->y = (height / 2) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 4) - 20;
     ptRec->y = (height / 4) + 20;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 3) - 60;
     ptRec->y = (height / 4) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 3) - 50;
     ptRec->y = (height / 4) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
     //***********************************************}
 } // InitScrn3()
 
 /******************************************************************************
-* Procedure: InitScrn3;
+* Procedure: InitScrn4;
 * Parameters: None
-* This function initializes screen #2, the top right game screen.
+* This function initializes screen [3], the bottom right game screen.
 *
 *     ||
 *  0  ||  1
@@ -773,8 +761,8 @@ void InitScrn4()
     const int boxW = 18; // blocks wide
     const int scrNo = 3;
 
-    ItemList::TItemRec *TnkPtr;
-    ItemList::TItemRec *ptRec;
+    std::shared_ptr<TItemRec> TnkPtr;
+    std::shared_ptr<TItemRec> ptRec;
 
     int w = BlockImage->w;
     int h = BlockImage->h;
@@ -785,36 +773,36 @@ void InitScrn4()
 
     int i = w;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = i;
         ptRec->y = height - h;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_x1) ||(i >= gate_x2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = i;
             ptRec->y = 0;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + w;
     } while( i < (width - w));
 
     i = 0;
     do{
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = width - w;
         ptRec->y = i;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         if((i < gate_y1) || (i >= gate_y2))
         {
-            ptRec = new ItemList::TItemRec;
+            ptRec = std::shared_ptr<TItemRec>(new TItemRec);
             ptRec->x = 0;
             ptRec->y = i;
-            ptRec->scrn = scrNo;
-            blocksList->addItem(ptRec);
+            ptRec->screen = scrNo;
+            blocksList.push_back(ptRec);
         }
         i = i + h;
     } while( i < (height - h));
@@ -824,17 +812,17 @@ void InitScrn4()
     for(i = 0; i < boxW; i++)
     {
         //top
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         // bottom
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = boxTop + (boxH * h);;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         x = x + w;
     } // next i
 
@@ -842,65 +830,65 @@ void InitScrn4()
     for(i = 0; i < boxH; i++)
     {
         //top
-        ptRec = new ItemList::TItemRec;
+        ptRec = std::shared_ptr<TItemRec>(new TItemRec);
         ptRec->x = x;
         ptRec->y = y;
-        ptRec->scrn = scrNo;
-        blocksList->addItem(ptRec);
+        ptRec->screen = scrNo;
+        blocksList.push_back(ptRec);
         y = y + h;
     } // next i
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 4;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = width - 40;
     TnkPtr->y = 30;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    TnkPtr = new ItemList::TItemRec;
+    TnkPtr = std::shared_ptr<TItemRec>(new TItemRec);
     TnkPtr->directionIdx = 2;
     TnkPtr->color = RedTank; // Bad guy
     TnkPtr->x = 160;
     TnkPtr->y = height - 60;
-    TnkPtr->scrn = scrNo;
-    tanksList->addItem(TnkPtr);
+    TnkPtr->screen = scrNo;
+    tanksList.push_back(TnkPtr);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 45;
     ptRec->y = (height / 2) - 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 60;
     ptRec->y = (height / 2) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 2) - 50;
     ptRec->y = (height / 2) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 4) - 20;
     ptRec->y = (height / 4) + 20;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 3) - 60;
     ptRec->y = (height / 4) + 10;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
 
-    ptRec = new ItemList::TItemRec;
+    ptRec = std::shared_ptr<TItemRec>(new TItemRec);
     ptRec->x = (width / 3) - 50;
     ptRec->y = (height / 4) + 15;
-    ptRec->scrn = scrNo;
-    treeList->addItem(ptRec);
+    ptRec->screen = scrNo;
+    treeList.push_back(ptRec);
     //***********************************************}
 } // InitScrn4()
 
@@ -908,35 +896,36 @@ void InitScrn4()
 * Key down event handler.
 ******************************************************************************/
 void CheckKeyPress() {
-    ItemList::TItemRec *TnkPtr = tanksList->getItem(GoodGuyIdx);
+    std::shared_ptr<TItemRec> tnkPtr(tanksList[GoodGuyIdx]);
+
     Uint8 *key = SDL_GetKeyState(NULL); // SDL_GetKeyboardState(NULL);
     bool pnt = false;
 
     if (key[SDLK_RIGHT]) {
         if (rightCnt++ > 1) {
-            TnkPtr->directionIdx = TnkPtr->directionIdx + 1;
-            if (TnkPtr->directionIdx >= DIR_COUNT)
-                TnkPtr->directionIdx = 0;
+            tnkPtr->directionIdx = tnkPtr->directionIdx + 1;
+            if (tnkPtr->directionIdx >= DIR_COUNT)
+                tnkPtr->directionIdx = 0;
             pnt = true;
         }
     } else if (key[SDLK_LEFT]) {
         if (leftCnt++ > 1) {
-            TnkPtr->directionIdx = TnkPtr->directionIdx - 1;
-            if (TnkPtr->directionIdx < 0)
-                TnkPtr->directionIdx = DIR_COUNT - 1;
+            tnkPtr->directionIdx = tnkPtr->directionIdx - 1;
+            if (tnkPtr->directionIdx < 0)
+                tnkPtr->directionIdx = DIR_COUNT - 1;
             pnt = true;
         }
     } else if (key[SDLK_UP]) {
         MoveTank(GoodGuyIdx, 3);
         pnt = true;
     } else if (key[SDLK_SPACE]) {
-        ItemList::TItemRec *brPtr = new ItemList::TItemRec;
-        brPtr->directionIdx = TnkPtr->directionIdx;
+        std::shared_ptr<TItemRec> brPtr(new TItemRec);
+        brPtr->directionIdx = tnkPtr->directionIdx;
         brPtr->dist = 0;
-        brPtr->x = TnkPtr->x + ShotStartX[TnkPtr->directionIdx];
-        brPtr->y = TnkPtr->y + ShotStartY[TnkPtr->directionIdx];
-        brPtr->scrn = curScrn;
-        bulletList->addItem(brPtr);
+        brPtr->x = tnkPtr->x + ShotStartX[tnkPtr->directionIdx];
+        brPtr->y = tnkPtr->y + ShotStartY[tnkPtr->directionIdx];
+        brPtr->screen = curScrn;
+        bulletList.push_back(brPtr);
         pnt = true;
     } else if (key[SDLK_ESCAPE]) {
         // Close the application
@@ -971,9 +960,10 @@ void UpdateGame()
     //bool done;
 
     // Move bullets
-    for(int i = bulletList->Count()-1; i>=0 ; i--)
+    bulletList.end();
+    for(int i = bulletList.size()-1; i>=0 ; i--)
     {
-        ItemList::TItemRec *brPtr = bulletList->getItem(i);
+        std::shared_ptr<TItemRec> brPtr(bulletList[i]);
         // track the distance the bullet moved
         brPtr->dist = brPtr->dist + moveCnt;
         bool bullet_done =false;
@@ -1046,25 +1036,25 @@ void UpdateGame()
         } // end switch
         if(bullet_done)
         {
-             bulletList->deleteItem(i);
+            bulletList.erase (bulletList.begin()+i);
         }
     } // next i
     // Animate explosions
-    for(int i = explosionList->Count()-1; i>=0; i--)
+    for(int i = explosionList.size()-1; i>=0; i--)
     {
-        ItemList::TItemRec *ExpRec = explosionList->getItem(i);
+        std::shared_ptr<TItemRec> ExpRec(explosionList[i]);
         ExpRec->directionIdx++;
         if(ExpRec->directionIdx >= EXP_COUNT)
         {
-            explosionList->deleteItem(i);
+            explosionList.erase (explosionList.begin()+i);
         }
     }
 
     blueCount = 0;
     redCount = 0;
-    for(int i = tanksList->Count()-1; i>=0; i--)
+    for(int i = tanksList.size()-1; i >= 0; i--)
     {
-        ItemList::TItemRec *TnkPtr = tanksList->getItem(i);
+        std::shared_ptr<TItemRec> TnkPtr(tanksList[i]);
 
         if (TnkPtr->color == DeadTank)
         {
@@ -1096,47 +1086,47 @@ void UpdateGame()
 *****************************************************************************/
 void MoveTank(int tankIdx, int cnt)
 {
-    ItemList::TItemRec *TnkPtr  = tanksList->getItem(tankIdx);
-    int x = TnkPtr->x;
-    int y = TnkPtr->y;
-    switch(TnkPtr->directionIdx)
+    std::shared_ptr<TItemRec> tnkPtr(tanksList[tankIdx]);
+    int x = tnkPtr->x;
+    int y = tnkPtr->y;
+    switch(tnkPtr->directionIdx)
     {
         case 0:
-            y = MoveTopLeft(TnkPtr->y, cnt);
+            y = MoveTopLeft(tnkPtr->y, cnt);
             break;
         case 1:
-            y = MoveTopLeft(TnkPtr->y, cnt);
-            x = MoveBtmRight(TnkPtr->x, cnt, MaxX );
+            y = MoveTopLeft(tnkPtr->y, cnt);
+            x = MoveBtmRight(tnkPtr->x, cnt, MaxX );
             break;
         case 2:
-            x = MoveBtmRight(TnkPtr->x, cnt, MaxX );
+            x = MoveBtmRight(tnkPtr->x, cnt, MaxX );
             break;
         case 3:
-            x = MoveBtmRight(TnkPtr->x, cnt, MaxX );
-            y = MoveBtmRight(TnkPtr->y, cnt, MaxY);
+            x = MoveBtmRight(tnkPtr->x, cnt, MaxX );
+            y = MoveBtmRight(tnkPtr->y, cnt, MaxY);
             break;
         case 4:
-            y = MoveBtmRight(TnkPtr->y, cnt, MaxY);
+            y = MoveBtmRight(tnkPtr->y, cnt, MaxY);
             break;
         case 5:
-            y = MoveBtmRight(TnkPtr->y, cnt, MaxY);
-            x = MoveTopLeft(TnkPtr->x, cnt);
+            y = MoveBtmRight(tnkPtr->y, cnt, MaxY);
+            x = MoveTopLeft(tnkPtr->x, cnt);
             break;
         case 6:
-            x = MoveTopLeft(TnkPtr->x, cnt);
+            x = MoveTopLeft(tnkPtr->x, cnt);
             break;
         case 7:
-            y = MoveTopLeft(TnkPtr->y, cnt);
-            x = MoveTopLeft(TnkPtr->x, cnt);
+            y = MoveTopLeft(tnkPtr->y, cnt);
+            x = MoveTopLeft(tnkPtr->x, cnt);
             break;
     } // end switch
-    int xt = TnkPtr->x + ShotStartX[TnkPtr->directionIdx];
-    int yt = TnkPtr->y + ShotStartY[TnkPtr->directionIdx];
+    int xt = tnkPtr->x + ShotStartX[tnkPtr->directionIdx];
+    int yt = tnkPtr->y + ShotStartY[tnkPtr->directionIdx];
 
     if(!chkBump( xt,yt))
     {
-        TnkPtr->x = x;
-        TnkPtr->y = y;
+        tnkPtr->x = x;
+        tnkPtr->y = y;
     }
     NewScreenCheck(tankIdx);
 } // MoveTank
@@ -1176,71 +1166,71 @@ int MoveBtmRight(int pos, int cnt, int max_val)
 *****************************************************************************/
 void NewScreenCheck(int tankIdx)
 {
-    ItemList::TItemRec *TnkPtr  = tanksList->getItem(tankIdx);
+    std::shared_ptr<TItemRec> tnkPtr(tanksList[tankIdx]);
     bool thruDoor = false;
-    if(TnkPtr->scrn == 0)
+    if(tnkPtr->screen == 0)
     {
-        if(TnkPtr->x >= (MaxX-4))
+        if(tnkPtr->x >= (MaxX - 4))
         {
-            TnkPtr->scrn = 1;
-            TnkPtr->x = 5;
+            tnkPtr->screen = 1;
+            tnkPtr->x = 5;
             thruDoor = true;
         }
-        else if(TnkPtr->y >= (MaxY-4))
+        else if(tnkPtr->y >= (MaxY - 4))
         {
             // Screen 3?
-            TnkPtr->scrn = 2;
-            TnkPtr->y = 5;
+            tnkPtr->screen = 2;
+            tnkPtr->y = 5;
             thruDoor = true;
         }
     }
-    else if(TnkPtr->scrn == 1)
+    else if(tnkPtr->screen == 1)
     {
-        if(TnkPtr->x < 4)
+        if(tnkPtr->x < 4)
         {
-            TnkPtr->scrn = 0;
-            TnkPtr->x = MaxX - (tankWidth + 1);
+            tnkPtr->screen = 0;
+            tnkPtr->x = MaxX - (tankWidth + 1);
             thruDoor = true;
         }
-        else if(TnkPtr->y >= (MaxY-4))
+        else if(tnkPtr->y >= (MaxY - 4))
         {
-            TnkPtr->scrn = 3;
-            TnkPtr->y = 5;
+            tnkPtr->screen = 3;
+            tnkPtr->y = 5;
             thruDoor = true;
         }
     }
-    else if(TnkPtr->scrn == 2)
+    else if(tnkPtr->screen == 2)
     {
-        if(TnkPtr->y < 4)
+        if(tnkPtr->y < 4)
         {
-            TnkPtr->scrn = 0;
-            TnkPtr->y = MaxY - (tankHeight + 1);
+            tnkPtr->screen = 0;
+            tnkPtr->y = MaxY - (tankHeight + 1);
             thruDoor = true;
         }
-        else if(TnkPtr->x >= (MaxX-4))
+        else if(tnkPtr->x >= (MaxX - 4))
         {
-            TnkPtr->scrn = 3;
-            TnkPtr->x = 5;
+            tnkPtr->screen = 3;
+            tnkPtr->x = 5;
             thruDoor = true;
         }
     }
-    else if(TnkPtr->scrn == 3)
+    else if(tnkPtr->screen == 3)
     {
-        if(TnkPtr->x < 4)
+        if(tnkPtr->x < 4)
         {
-            TnkPtr->scrn = 2;
-            TnkPtr->x = MaxX - (tankWidth + 1);
+            tnkPtr->screen = 2;
+            tnkPtr->x = MaxX - (tankWidth + 1);
             thruDoor = true;
         }
-        else if(TnkPtr->y < 4)
+        else if(tnkPtr->y < 4)
         {
-            TnkPtr->scrn = 1;
-            TnkPtr->y = MaxY - (tankHeight + 1);
+            tnkPtr->screen = 1;
+            tnkPtr->y = MaxY - (tankHeight + 1);
             thruDoor = true;
         }
     }
-    if (thruDoor && (TnkPtr->color == BlueTank)) // Goog guy?
-        curScrn = TnkPtr->scrn;
+    if (thruDoor && (tnkPtr->color == BlueTank)) // Goog guy?
+        curScrn = tnkPtr->screen;
 }
 
 /*****************************************************************************
@@ -1267,36 +1257,35 @@ int CheckGameOver()
 void ChkCollisions()
 {
     int j=0;
-    for(int i = bulletList->Count()-1; i >= 0;i--)
+    for(int i = bulletList.size()-1; i >= 0;i--)
     {
-        ItemList::TItemRec *brPtr =  bulletList->getItem(i);
+        std::shared_ptr<TItemRec> brPtr(bulletList[i]);
+        std::shared_ptr<TItemRec> expRec(new TItemRec);
         if(TankCollision(brPtr->x, brPtr->y, &j))
         {
-            if(j >= 0 && j < tanksList->Count())
+            if(j >= 0 && j < tanksList.size())
             {
-               ItemList::TItemRec *TnkPtr = tanksList->getItem(j);
-               ItemList::TItemRec *ExpRec = new ItemList::TItemRec();
-               ExpRec->x = brPtr->x - (explosionWidth / 2);
-               ExpRec->y = brPtr->y - (explosionHeight / 2);
-               ExpRec->directionIdx = 0;
-               ExpRec->scrn = curScrn;
-               explosionList->addItem(ExpRec);
-               TnkPtr->color = DeadTank;
-               TnkPtr->directionIdx = 0;
-               bulletList->deleteItem(i);
+                std::shared_ptr<TItemRec> TnkPtr = tanksList[j];
+                expRec->x = brPtr->x - (explosionWidth / 2);
+                expRec->y = brPtr->y - (explosionHeight / 2);
+                expRec->directionIdx = 0;
+                expRec->screen = curScrn;
+                explosionList.push_back(expRec);
+                TnkPtr->color = DeadTank;
+                TnkPtr->directionIdx = 0;
+                bulletList.erase (bulletList.begin()+i);
             }
         }
         else if(WallCollision(brPtr->x, brPtr->y, &j))
         {
-            if(j >= 0 && j <  blocksList->Count())
+            if(j >= 0 && j <  blocksList.size())
             {
-               ItemList::TItemRec *ExpRec = new ItemList::TItemRec();
-               ExpRec->x = brPtr->x - (explosionWidth / 2);
-               ExpRec->y = brPtr->y - (explosionHeight / 2);
-               ExpRec->directionIdx = 0;
-               ExpRec->scrn = curScrn;
-               explosionList->addItem(ExpRec);
-               bulletList->deleteItem(i);
+                expRec->x = brPtr->x - (explosionWidth / 2);
+                expRec->y = brPtr->y - (explosionHeight / 2);
+                expRec->directionIdx = 0;
+                expRec->screen = curScrn;
+                explosionList.push_back(expRec);
+                bulletList.erase (bulletList.begin()+i);
             }
         }
     } // next i
@@ -1320,15 +1309,14 @@ bool chkBump(int x, int y)
 *****************************************************************************/
 bool TankCollision(int x,int y, int *idx)
 {
-    ItemList::TItemRec *tnkPtr;
     bool retval = false;
 
     *idx = -1;
-    int i = tanksList->Count() - 1;
+    int i = tanksList.size() - 1;
     while(i >=0)
     {
-        tnkPtr = tanksList->getItem(i);
-        if(tnkPtr->scrn == curScrn)
+        std::shared_ptr<TItemRec> tnkPtr(tanksList[i]);
+        if(tnkPtr->screen == curScrn)
         {
             int x1 = tnkPtr->x;
             int y1 = tnkPtr->y;
@@ -1358,13 +1346,12 @@ bool TankCollision(int x,int y, int *idx)
 bool WallCollision(int x, int y, int *idx)
 {
     bool retval = false;
-    ItemList::TItemRec *ptRec;
 
-    int i = blocksList->Count() - 1;
+    int i = blocksList.size() - 1;
     while(i >=0)
     {
-        ptRec = blocksList->getItem(i);
-        if(ptRec->scrn == curScrn)
+        std::shared_ptr<TItemRec> ptRec(blocksList[i]);
+        if(ptRec->screen == curScrn)
         {
             int x1 = ptRec->x - 1;
             int y1 = ptRec->y - 1;
@@ -1403,12 +1390,12 @@ bool Collision(int x, int y, int x1, int y1, int x2, int y2)
 bool AimingAtTarget(int idx)
 {
     bool retVal = false;
-    ItemList::TItemRec *tnkPtr = tanksList->getItem(idx);
+    std::shared_ptr<TItemRec> tnkPtr(tanksList[idx]);
     int x2 = tnkPtr->x + (tankWidth / 2);
     int y2 = tnkPtr->y + (tankHeight / 2);
     int dir = tnkPtr->directionIdx;
 
-    tnkPtr = tanksList->getItem(GoodGuyIdx);
+    tnkPtr = tanksList[GoodGuyIdx];
 
     if(tnkPtr->color == BlueTank )
     {
@@ -1456,7 +1443,7 @@ bool AimingAtTarget(int idx)
  * Parameters:
  *****************************************************************************/
 void badGuyRoutine(int tankIdx) {
-    ItemList::TItemRec *tnkPtr = tanksList->getItem(tankIdx);
+    std::shared_ptr<TItemRec> tnkPtr(tanksList[tankIdx]);
 
     int i = rand() % 10 + 1;
     if (i == 2) {
@@ -1491,14 +1478,14 @@ void badGuyRoutine(int tankIdx) {
                 tnkPtr->directionIdx--;
         }
     }
-    if (AimingAtTarget(tankIdx) && (tnkPtr->scrn == curScrn)) {
-        ItemList::TItemRec *brPtr = new ItemList::TItemRec();
+    if (AimingAtTarget(tankIdx) && (tnkPtr->screen == curScrn)) {
+        std::shared_ptr<TItemRec> brPtr(new TItemRec);
         brPtr->directionIdx = tnkPtr->directionIdx;
         brPtr->dist = 0;
-        brPtr->scrn = tnkPtr->scrn;
+        brPtr->screen = tnkPtr->screen;
         brPtr->x = tnkPtr->x + ShotStartX[tnkPtr->directionIdx];
         brPtr->y = tnkPtr->y + ShotStartY[tnkPtr->directionIdx];
-        bulletList->addItem(brPtr);
+        bulletList.push_back(brPtr);
     }
 } // badGuyRoutine
 
@@ -1540,23 +1527,23 @@ void DrawImageFrame(SDL_Surface* image, SDL_Surface* destSurface,
 ****************************************************************************/
 void PaintGame()
 {
-    ItemList::TItemRec *ptRec;
+    std::shared_ptr<TItemRec> ptRec;
 
     ClearScreen();
 
     // Draw Wall
-    for(int i = 0; i< blocksList->Count(); i++)
+    for(int i = 0; i< blocksList.size(); i++)
     {
-        ptRec = blocksList->getItem(i);
-        if(ptRec->scrn == curScrn)
+        ptRec = blocksList[i];
+        if(ptRec->screen == curScrn)
             DrawImage(BlockImage, Backbuffer, ptRec->x, ptRec->y);
     } // next i
 
     // Draw tanks
-    for(int i = 0; i < tanksList->Count(); i++)
+    for(int i = 0; i < tanksList.size(); i++)
     {
-        ptRec = tanksList->getItem(i);
-        if(ptRec->scrn == curScrn)
+        ptRec = tanksList[i];
+        if(ptRec->screen == curScrn)
         {
             if (ptRec->color == BlueTank)
             {
@@ -1577,10 +1564,10 @@ void PaintGame()
     } // next i
 
     // Draw bullets
-    for(int i = 0; i < bulletList->Count(); i++)
+    for(int i = 0; i < bulletList.size(); i++)
     {
-        ptRec =  bulletList->getItem(i);
-        if(ptRec->scrn == curScrn)
+        ptRec = bulletList[i];
+        if(ptRec->screen == curScrn)
         {
             SDL_Rect* rect = new SDL_Rect;
             rect->x = ptRec->x-1;
@@ -1592,10 +1579,10 @@ void PaintGame()
     }
 
     // Draw explosions
-    for(int i = 0; i < explosionList->Count(); i++)
+    for(int i = 0; i < explosionList.size(); i++)
     {
-        ptRec = explosionList->getItem(i);
-        if(ptRec->scrn == curScrn)
+        ptRec = explosionList[i];
+        if(ptRec->screen == curScrn)
         {
             DrawImageFrame(explosions, Backbuffer, ptRec->x, ptRec->y,
                     explosionWidth, explosionHeight, ptRec->directionIdx);
@@ -1603,15 +1590,14 @@ void PaintGame()
     }
 
     // Draw Trees
-    for(int i = 0; i < treeList->Count(); i++)
+    for(int i = 0; i < treeList.size(); i++)
     {
-        ptRec = treeList->getItem(i);
-        if(ptRec->scrn == curScrn)
+        ptRec = treeList[i];
+        if(ptRec->screen == curScrn)
         {
             DrawImage(TreeImage, Backbuffer, ptRec->x, ptRec->y);
         }
     }
-
 } // PaintGame()
 
 
