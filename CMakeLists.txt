@@ -15,9 +15,7 @@ add_executable(Tanks2
         images/TankSpriteBlue.bmp
         images/TankSpriteRed.bmp
         images/Tree1.bmp
-        ItemList.cpp
-        ItemList.h
-        main.cpp DrawText.cpp DrawText.h gameMessageBox.cpp gameMessageBox.h)
+        main.cpp DrawText.cpp DrawText.h gameMessageBox.cpp gameMessageBox.h Item.h)
 
 target_link_libraries(Tanks2
         "/usr/lib/x86_64-linux-gnu/libSDL.so"
